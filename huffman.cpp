@@ -141,8 +141,18 @@ void Tree::createAlphabetCodes(int spaces, std::string str_codes){
 	for (int i=0; i<spaces; i++) {
 		std::cout << " ";
 	}
+
 	if (this->value) {
-		std::cout << " " << str_codes << " ";
+		codes[this->value] = str_codes;
+
+		std::map<char, std::string>::iterator it;
+		// int i=0;
+		// for(it=codes.begin(); it!=codes.end(); it++) {
+		// 	std::cout << "CREATE NODE: " << i++ << std::endl;
+		// 	std::cout << it->first << " " << it->second << std::endl;
+		// }
+
+		// std::cout << "CREATE NODE: " << this->value << " " << this->codes[this->value] << std::endl;
 	}
 	std::cout << this->value << " " << this->prob << std::endl;
 	if (this->left != NULL){
@@ -155,21 +165,71 @@ void Tree::createAlphabetCodes(int spaces, std::string str_codes){
 		str_codes += "0";
 		this->right->createAlphabetCodes(spaces+2, str_codes);
 	}
-	str_codes.erase(str_codes.end() -1);
+	// str_codes.erase(str_codes.end() -1);
+}
+
+std::string Coder::generateCode(std::string input) {
+	std::string code = "";
+	// std::map<char, std::string>::iterator it;
+	// int i=0;
+	// for(it=this->codes.begin(); it!=this->codes.end(); it++) {
+	// 	std::cout << it->first << " " << it->second << std::endl;
+	// }
+	for(int i=0; i<input.size(); i++) {
+		// std::cout << codes[input[i]] << std::endl;
+		code += codes[input[i]];
+	}
+
+	return code;
+}
+
+std::string Coder::decode(std::string code) {
+	std::string to_decode = "";
+	std::string output = "";
+	std::map<char, std::string>::iterator it;
+	for (int i=0; i<code.size(); i++) {
+		to_decode += code[i];
+
+		for(it=this->codes.begin(); it!=this->codes.end(); it++) {
+			if(it->second == to_decode) {
+				output += it->first;
+				to_decode = "";
+			}
+		}
+	}
+
+	return output;
+
 }
 
 
 int main() {
+	std::string input = "aaaaaaaaabbbbcccdddeef";
 	Coder *coder = new Coder();
 
-	std::map<char, float> prob = coder->calcProbabilities("aaaaaaaaabbbbcccdddeef");
+	std::map<char, float> prob = coder->calcProbabilities(input);
 	// std::map<char, float> prob = coder->calcProbabilities("abcd");
 
 	Tree* t = coder->createTree(prob);
 	std::cout << "Printing all nodes..." << std::endl;
+	std::string str_codes;
 	t->printTree(0);
+
 	t->createAlphabetCodes(0, str_codes);
 
+	std::cout << "Printing codes..." << std::endl;
+	std::map<char, std::string>::iterator it;
+	for(it=codes.begin(); it!=codes.end(); it++) {
+		// std::cout << it->first << " " << it->second << std::endl;
+		coder->codes[it->first] = it->second;
+	}
+
+	std::cout << "Result: ";
+	std::string code = coder->generateCode(input);
+	std::cout << code << std::endl;
+
+	std::cout << "Decoded: ";
+	std::cout << coder->decode(code) << std::endl;
 
 	return 0;
 }
