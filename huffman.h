@@ -8,7 +8,9 @@ class Tree {
 	public:
 		void insertLeft(Tree*);
 		void insertRight(Tree*);
-		void printTree();
+		void printTree(int);
+		Tree();
+		Tree(char, float);
 
 		Tree *left;
 		Tree *right;
