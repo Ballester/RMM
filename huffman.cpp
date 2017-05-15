@@ -44,13 +44,9 @@ Tree* Coder::createTree(std::map<char, float> prob) {
 	int min_pos = 0;
 	float pos_counter;
 	std::vector<Tree*> alphabet;
-	std::vector<Tree*> saver;
 	Tree *t, *s0, *s1, *x;
-	t = new Tree();
-	s0 = new Tree();
-	s1 = new Tree();
-	x = new Tree();
-	//std::cout << "Instanced\n";
+
+	//Get first value
 	for(it=prob.begin(); it!=prob.end(); it++) {
 		t = new Tree();
 
@@ -61,6 +57,7 @@ Tree* Coder::createTree(std::map<char, float> prob) {
 	}
 	std::cout << "Input: " << std::endl;
 	for (int i=0; i<alphabet.size(); i++) {
+		alphabet[i]->left = alphabet[i]->right = NULL;
 		std::cout << alphabet[i]->value << " " << alphabet[i]->prob << std::endl;
 	}
 
@@ -80,12 +77,9 @@ Tree* Coder::createTree(std::map<char, float> prob) {
 
 		}
 		s0 = alphabet[min_pos];
-		// s0->value = alphabet[min_pos]->value;
-		// s0->prob = alphabet[min_pos]->prob;
 		alphabet.erase(alphabet.begin() + min_pos);
-		if(alphabet.size() == 0){
 
-		}
+		//Get second value
 		min_prob = alphabet[0]->prob;
 		min_pos = 0;
 		for(int i=0; i<alphabet.size(); i++) {
@@ -96,26 +90,23 @@ Tree* Coder::createTree(std::map<char, float> prob) {
 
 		}
 		s1 = alphabet[min_pos];
-		// s1->value = alphabet[min_pos]->value;
-		// s1->prob = alphabet[min_pos]->prob;
-		// saver.push_back(alphabet[min_pos]);
 		alphabet.erase(alphabet.begin() + min_pos);
 
-		for (int i=0; i<alphabet.size(); i++) {
-			std::cout << alphabet[i]->value << std::endl;
-		}
 
 		x->prob = s0->prob + s1->prob;
-		//x->value = s0->value + s1->value;
-		x->left = s0;
-		x->right = s1;
-		// std::cout << "Previous neighbours: " << std::endl << s0->left << " " << s0->right << std::endl << s1->left << " " << s1->right << std::endl;
-		// x->left = new Tree(s0->value, s0->prob);
-		// x->right = new Tree(s1->value, s1->prob);
-		// std::cout << "Created node: " << x->value << " " << x->prob << std::endl;
-		// std::cout << "Left: " << x->left->value << " " << x->left->prob << std::endl;
-		// std::cout << "Right: " << x->right->value << " " << x->right->prob << std::endl;
+		x->left = s1;
+		x->right = s0;
+
+		std::cout << "Created node: " << x->value << " " << x->prob << std::endl;
+		std::cout << "Left: " << x->left->value << " " << x->left->prob << std::endl;
+		std::cout << "Right: " << x->right->value << " " << x->right->prob << std::endl;
 		alphabet.push_back(x);
+		// for (int i=0; i<alphabet.size(); i++) {
+		// 	std::cout << alphabet[i]->value << std::endl;
+		// }
+		// if (s1->value == 'd') {
+		// 	std::cout << "BUG: " << s1->value << " " << s1->prob << " " << s1->left << " " << s1->right->value << std::endl;
+		// }
 	}
 
 	return alphabet[0];
@@ -130,6 +121,7 @@ void Tree::printTree(int spaces) {
 	if (this->value) {
 		std::cout << " ";
 	}
+
 	std::cout << this->value << " " << this->prob << std::endl;
 	if (this->left != NULL)
 		this->left->printTree(spaces+2);
@@ -154,13 +146,13 @@ void Tree::createAlphabetCodes(int spaces, std::string str_codes){
 	}
 	std::cout << this->value << " " << this->prob << std::endl;
 	if (this->left != NULL){
-		str_codes += "0";
+		str_codes += "1";
 		this->left->createAlphabetCodes(spaces+2,str_codes);
 	}
 	str_codes.erase(str_codes.end() -1);
 
 	if (this->right != NULL){
-		str_codes += "1";
+		str_codes += "0";
 		this->right->createAlphabetCodes(spaces+2, str_codes);
 	}
 	str_codes.erase(str_codes.end() -1);
@@ -171,6 +163,8 @@ int main() {
 	Coder *coder = new Coder();
 
 	std::map<char, float> prob = coder->calcProbabilities("aaaaaaaaabbbbcccdddeef");
+	// std::map<char, float> prob = coder->calcProbabilities("abcd");
+
 	Tree* t = coder->createTree(prob);
 	std::cout << "Printing all nodes..." << std::endl;
 	t->printTree(0);
