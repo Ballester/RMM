@@ -1,5 +1,6 @@
 #include "huffman.h"
 #include <iostream>
+#include <cstdio>
 #include <vector>
 #include <algorithm>
 #include <string.h>
@@ -202,14 +203,40 @@ std::string Coder::decode(std::string code) {
 
 }
 
+void saveProbToFile(std::map<char, float> probs) {
+	freopen("probs.txt","w",stdout);
+	std::map<char, float>::iterator it;
+	for(it=probs.begin(); it!=probs.end(); it++) {
+		std::cout << it->first << " " << it->second << std::endl;
+	}
+
+	freopen ("/dev/tty", "a", stdout);
+}
+
+std::map<char, float> loadProbFromFile() {
+	char value;
+	float prob;
+	std::map<char, float> probs;
+
+	std::cout << "OPENING FILE" << std::endl;
+	FILE *f = fopen("probs.txt", "r");
+	while (fscanf(f, "%c %f", &value, &prob) != -1) {
+		std::cout << value << " " << prob << std::endl;
+		probs[value] = prob;
+	}
+	return probs;
+}
 
 int main() {
 	std::string input = "aaaaaaaaabbbbcccdddeef";
 	Coder *coder = new Coder();
 
-	std::map<char, float> prob = coder->calcProbabilities(input);
-	// std::map<char, float> prob = coder->calcProbabilities("abcd");
+	std::map<char, float> prob;
 
+	// prob = coder->calcProbabilities(input);
+	// saveProbToFile(prob);
+	
+	prob = loadProbFromFile();
 	Tree* t = coder->createTree(prob);
 	std::cout << "Printing all nodes..." << std::endl;
 	std::string str_codes;
