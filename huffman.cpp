@@ -145,15 +145,37 @@ void Tree::insertRight(Tree* node) {
 	this->right = node;
 }
 
+void Tree::createAlphabetCodes(int spaces, std::string str_codes){
+	for (int i=0; i<spaces; i++) {
+		std::cout << " ";
+	}
+	if (this->value) {
+		std::cout << " " << str_codes << " ";
+	}
+	std::cout << this->value << " " << this->prob << std::endl;
+	if (this->left != NULL){
+		str_codes += "0";
+		this->left->createAlphabetCodes(spaces+2,str_codes);
+	}
+	str_codes.erase(str_codes.end() -1);
+
+	if (this->right != NULL){
+		str_codes += "1";
+		this->right->createAlphabetCodes(spaces+2, str_codes);
+	}
+	str_codes.erase(str_codes.end() -1);
+}
 
 
 int main() {
 	Coder *coder = new Coder();
-	std::map<char, float> prob = coder->calcProbabilities("abaaaacccdddawdawdwadawdawdawdawdae");
+
+	std::map<char, float> prob = coder->calcProbabilities("aaaaaaaaabbbbcccdddeef");
 	Tree* t = coder->createTree(prob);
 	std::cout << "Printing all nodes..." << std::endl;
-
 	t->printTree(0);
+	t->createAlphabetCodes(0, str_codes);
+
 
 	return 0;
 }

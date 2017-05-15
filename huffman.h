@@ -3,6 +3,8 @@
 #include <utility>
 #include <vector>
 
+std::string str_codes;
+
 class Tree {
 
 	public:
@@ -11,6 +13,7 @@ class Tree {
 		void printTree(int);
 		Tree();
 		Tree(char, float);
+		void createAlphabetCodes(int spaces, std::string str_codes);
 
 		Tree *left;
 		Tree *right;
@@ -19,11 +22,11 @@ class Tree {
 };
 
 class Coder {
-	std::map<char, std::string> codes;
-
 	public:
+			std::map<char, std::string> codes;
 	    std::map<char, float> calcProbabilities(std::string);
 	    Tree* createTree(std::map<char, float>);
+
 };
 
 class Decoder {
