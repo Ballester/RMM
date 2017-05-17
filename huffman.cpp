@@ -243,7 +243,7 @@ int main() {
 	<< "1. Para rodar o teste default com a entrada default\n"
 	<< "2. Para rodar com as probabilidades do arquivo\n"
 	<< "3. Para salvar as probabilidades no arquivo\n"
-	<< "4. Para terminar" << std::endl;
+ 	<< std::endl;
 	std:: cin >> controler;
 
 	if(controler == 1){
