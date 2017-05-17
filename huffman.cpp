@@ -1,9 +1,12 @@
 #include "huffman.h"
-#include <iostream>
 #include <cstdio>
 #include <vector>
 #include <algorithm>
 #include <string.h>
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <bitset>
 
 std::map<char, float> Coder::calcProbabilities(std::string str) {
 	std::map<char, int> count;
@@ -219,6 +222,7 @@ std::map<char, float> loadProbFromFile() {
 	std::map<char, float> probs;
 
 	std::cout << "OPENING FILE" << std::endl;
+
 	FILE *f = fopen("probs.txt", "r");
 	while (fscanf(f, "%c %f", &value, &prob) != -1) {
 		std::cout << value << " " << prob << std::endl;
@@ -230,33 +234,80 @@ std::map<char, float> loadProbFromFile() {
 int main() {
 	std::string input = "aaaaaaaaabbbbcccdddeef";
 	Coder *coder = new Coder();
-
 	std::map<char, float> prob;
+	int controler;
+	std::ofstream myfile;
 
-	// prob = coder->calcProbabilities(input);
-	// saveProbToFile(prob);
-	
-	prob = loadProbFromFile();
-	Tree* t = coder->createTree(prob);
-	std::cout << "Printing all nodes..." << std::endl;
-	std::string str_codes;
-	t->printTree(0);
 
-	t->createAlphabetCodes(0, str_codes);
+	std::cout << "Entre com uma das entradas abaixo:\n"
+	<< "1. Para rodar o teste default com a entrada default\n"
+	<< "2. Para rodar com as probabilidades do arquivo\n"
+	<< "3. Para salvar as probabilidades no arquivo\n"
+	<< "4. Para terminar" << std::endl;
+	std:: cin >> controler;
 
-	std::cout << "Printing codes..." << std::endl;
-	std::map<char, std::string>::iterator it;
-	for(it=codes.begin(); it!=codes.end(); it++) {
-		// std::cout << it->first << " " << it->second << std::endl;
-		coder->codes[it->first] = it->second;
+	if(controler == 1){
+		myfile.open ("input.bin");
+		for (std::size_t i = 0; i < input.size(); ++i){
+			myfile << std::bitset<8>(input.c_str()[i]);
+		}
+		myfile.close();
+
+		prob = coder->calcProbabilities(input);
+		Tree* t = coder->createTree(prob);
+		std::cout << "Printing all nodes..." << std::endl;
+		std::string str_codes;
+		t->printTree(0);
+		t->createAlphabetCodes(0, str_codes);
+		std::cout << "Printing codes..." << std::endl;
+		std::map<char, std::string>::iterator it;
+		for(it=codes.begin(); it!=codes.end(); it++) {
+			coder->codes[it->first] = it->second;
+		}
+		std::cout << "Probabilidades salva no arquivo probs.txt" << std::endl;
+		saveProbToFile(prob);
+	}
+	if(controler == 2){
+			prob = loadProbFromFile();
+			Tree* t = coder->createTree(prob);
+			std::cout << "Printing all nodes..." << std::endl;
+			std::string str_codes;
+			t->printTree(0);
+			t->createAlphabetCodes(0, str_codes);
+			std::cout << "Printing codes..." << std::endl;
+			std::map<char, std::string>::iterator it;
+			for(it=codes.begin(); it!=codes.end(); it++) {
+				coder->codes[it->first] = it->second;
+			}
+	}
+	if(controler == 3){
+		prob = coder->calcProbabilities(input);
+		Tree* t = coder->createTree(prob);
+		std::string str_codes;
+		t->printTree(0);
+		t->createAlphabetCodes(0, str_codes);
+		std::cout << "Printing codes..." << std::endl;
+		std::map<char, std::string>::iterator it;
+		for(it=codes.begin(); it!=codes.end(); it++) {
+			coder->codes[it->first] = it->second;
+		}
+		std::cout << "Probabilidades salva no arquivo probs.txt" << std::endl;
+		saveProbToFile(prob);
 	}
 
-	std::cout << "Result: ";
-	std::string code = coder->generateCode(input);
-	std::cout << code << std::endl;
+	if(controler < 4){
+		std::cout << "Enconded: ";
+		std::string code = coder->generateCode(input);
+		std::cout << code << std::endl;
+		std::string toWrite = code;
+		myfile.open ("output.bin");
+		for (std::size_t i = 0; i < toWrite.size(); ++i){
+			myfile << std::bitset<1>(toWrite.c_str()[i]);
+		}
+		myfile.close();
 
-	std::cout << "Decoded: ";
-	std::cout << coder->decode(code) << std::endl;
-
+		std::cout << "Decoded: ";
+		std::cout << coder->decode(code) << std::endl;
+	}
 	return 0;
 }
