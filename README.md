@@ -1,2 +1,0 @@
-# RMM
-RMM huffman
