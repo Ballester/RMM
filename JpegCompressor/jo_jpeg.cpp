@@ -3,6 +3,8 @@
 #include <math.h>
 #include <string.h>
 #include <iostream>
+#include <fstream>
+
 using namespace std;
 
 #ifndef JO_INCLUDE_JPEG_H
@@ -11,28 +13,55 @@ using namespace std;
 // To get a header file for this, either cut and paste the header,
 // or create jo_jpeg.h, #define JO_JPEG_HEADER_FILE_ONLY, and
 // then include jo_jpeg.c from it.
-
 // Returns false on failure
 extern bool jo_write_jpg(const char *filename, const void *data, int width, int height, int comp, int quality);
-
 #endif // JO_INCLUDE_JPEG_H
-
 #ifndef JO_JPEG_HEADER_FILE_ONLY
-
 #if defined(_MSC_VER) && _MSC_VER >= 0x1400
 #define _CRT_SECURE_NO_WARNINGS // suppress warnings about fopen()
 #endif
 
+void cod_pred(ifstream &input_file, char * raw_array);
+void dec_pred();
+void open_file(ifstream &input_file, string file_name);
+
+
 int main() {
-	std::string input = "aaaaaaaaabbbbcccdddeef";
-	char *foo = new char[128*128*4];
+	ifstream raw_file;
+	//o arquivo lena.raw tem 512x512 de dimensões
+	char *raw_array = new char[528];
+
+	open_file(raw_file, "lena.raw");
+	cod_pred(raw_file, raw_array);
 
 	// comp can be 1, 3, or 4. Lum, RGB, or RGBX respectively.
-	if(jo_write_jpg("lena.raw", foo, 128, 128, 4, 90)){
-			cout << input << endl;
-	}
-	
+	jo_write_jpg("lens.jpg", raw_array, 128, 128, 4, 90);
+
   return 0;
+}
+
+void cod_pred(ifstream &input_file, char *raw_array){
+	short value;
+  int i = 0;
+  char buf[sizeof(short)];
+
+	while (input_file.read(buf, sizeof(buf))){
+      memcpy(&value, buf, sizeof(value));
+
+			raw_array[i] = (char) value;
+			cout << raw_array[i] << " ";
+      i++;
+
+  }
+}
+
+//open a raw file
+void open_file(ifstream &input_file, string file_name){
+	input_file.open(file_name.c_str(),ios::binary);
+}
+
+void cod_pred(char *raw_data){
+
 }
 
 /* public domain Simple, Minimalistic JPEG writer - http://jonolick.com
