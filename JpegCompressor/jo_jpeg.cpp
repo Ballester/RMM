@@ -21,38 +21,41 @@ extern bool jo_write_jpg(const char *filename, const void *data, int width, int 
 #define _CRT_SECURE_NO_WARNINGS // suppress warnings about fopen()
 #endif
 
-void cod_pred(ifstream &input_file, char * raw_array);
+void cod_pred();
 void dec_pred();
 void open_file(ifstream &input_file, string file_name);
 
 
 int main() {
-	ifstream raw_file;
-	//o arquivo lena.raw tem 512x512 de dimensões
-	char *raw_array = new char[528];
-
-	open_file(raw_file, "lena.raw");
-	cod_pred(raw_file, raw_array);
+	cod_pred();
 
 	// comp can be 1, 3, or 4. Lum, RGB, or RGBX respectively.
-	jo_write_jpg("lens.jpg", raw_array, 128, 128, 4, 90);
+	//jo_write_jpg("lens.jpg", raw_array, 512, 512, 1, 90);
 
   return 0;
 }
 
-void cod_pred(ifstream &input_file, char *raw_array){
-	short value;
-  int i = 0;
-  char buf[sizeof(short)];
+void cod_pred(){
+	ifstream raw_file;
+	//o arquivo lena.raw tem 512x512 de dimensões
+	unsigned char raw_array[512][512];
+	open_file(raw_file, "lena.raw");
 
-	while (input_file.read(buf, sizeof(buf))){
-      memcpy(&value, buf, sizeof(value));
+	for(int i = 0; i < 512; i++) {
+    for(int j = 0; j < 512; j++) {
+			raw_file >> raw_array[i][j];
+			//cout << "raw_array["<< i << "][" << j << "]: " << raw_array[i][j] << endl;
+    }
+	}
 
-			raw_array[i] = (char) value;
-			cout << raw_array[i] << " ";
-      i++;
+	for(int i = 1; i < 512; i++) {
+    for(int j = 0; j < 512; j++) {
+			raw_array[i][j] = raw_array[i][j+1] - raw_array[i][j];
+			//cout << "raw_array["<< i << "][" << j << "]: " << raw_array[i][j] << endl;
+    }
+	}
 
-  }
+	//return raw_array;
 }
 
 //open a raw file
