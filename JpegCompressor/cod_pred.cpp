@@ -32,8 +32,6 @@ int main(int argc, char *argv[0]) {
     }
     raw_file.close();
 
-    std::ofstream predicted_file;
-    predicted_file.open("predicted.raw", std::ios::binary);
     for (int i=1; i<h; i++) {
         for (int j=0; j<w; j++) {
             for (int k=0; k<d; k++) {
@@ -48,14 +46,12 @@ int main(int argc, char *argv[0]) {
     for (int i=0; i<h; i++) {
         for (int j=0; j<w; j++) {
             for (int k=0; k<d; k++) {
-                predicted_file << (unsigned char) predicted[i][j][k];
                 residue[i][j][k] = abs(raw_array[i][j][k] - predicted[i][j][k]);
                 residue_file << (unsigned char) residue[i][j][k];
             }
         }
     }
 
-    predicted_file.close();
     residue_file.close();
 
     char *residue_c = new char[w*h*d];
