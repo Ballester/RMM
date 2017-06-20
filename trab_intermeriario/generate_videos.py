@@ -20,19 +20,21 @@ def findVideoMetada(pathToInputVideo):
 
 
 path = "video_original.mp4"
-sizes = [(1280, 720), (720, 480), (480, 320)]
+# sizes = [(1280, 720), (720, 480), (480, 320)]
+sizes = [(1280, 720), (720, 480)]
 
 names = []
 for (i, size) in enumerate(sizes) :
     names.append(path.split('.')[0] + "_" + str(size[1]) + ".mp4")
     print names
 
-    # os.system("ffmpeg -i " + path + " -vf scale=-1:" + str(size[1]) + " -preset ultrafast " + " -r 30 -preset ultrafast -x264opts keyint=60:min-keyint=60:scenecut=-1 -c:a copy " + names[i])
+    os.system("ffmpeg -i " + path + " -vf scale=" + str(size[0]) + ":" + str(size[1]) + " -preset ultrafast " + " -r 30 -preset ultrafast -x264opts keyint=60:min-keyint=60:scenecut=-1 -c:a copy " + names[i])
 
 # raise
+names.append(path)
 for name in names:
 
-    meta = findVideoMetada(path)
+    meta = findVideoMetada(name)
     # print meta
     bitrate = float(meta['streams'][0]['bit_rate'])
     bitrate += float(meta['streams'][1]['bit_rate'])
