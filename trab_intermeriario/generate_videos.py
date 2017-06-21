@@ -27,7 +27,6 @@ names.append(path)
 for name in names:
     meta = findVideoMetada(name)
     bitrate = float(meta['streams'][0]['bit_rate'])
-    # bitrate += float(meta['streams'][1]['bit_rate'])
     bitrate = bitrate/1024.0
     print '\n\nBITRATE'
     print bitrate
@@ -35,3 +34,14 @@ for name in names:
     os.system("ffmpeg -i " + name + " -b:v " + str(0.6*bitrate) + "k -threads 0 -minrate " + str(0.6*bitrate) + "k -maxrate " + str(0.6*bitrate) + "k -r 30 -preset ultrafast -x264opts keyint=60:min-keyint=60:scenecut=-1 -c:a aac -strict -2 -bufsize 154k " + name.split('.')[0] + "_06.mp4")
     os.system("ffmpeg -i " + name + " -b:v " + str(0.4*bitrate) + "k -threads 0 -minrate " + str(0.4*bitrate) + "k -maxrate " + str(0.4*bitrate) + "k -r 30 -preset ultrafast -x264opts keyint=60:min-keyint=60:scenecut=-1 -c:a aac -strict -2 -bufsize 154k " + name.split('.')[0] + "_04.mp4")
     os.system("ffmpeg -i " + name + " -b:v " + str(0.2*bitrate) + "k -threads 0 -minrate " + str(0.2*bitrate) + "k -maxrate " + str(0.2*bitrate) + "k -r 30 -preset ultrafast -x264opts keyint=60:min-keyint=60:scenecut=-1 -c:a aac -strict -2 -bufsize 154k " + name.split('.')[0] + "_02.mp4")
+
+for name in names:
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_08.mp4 -lavfi psnr="psnr_' + name.split('.')[0] + '_08.log" -f null -')
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_06.mp4 -lavfi psnr="psnr_' + name.split('.')[0] + '_06.log" -f null -')
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_04.mp4 -lavfi psnr="psnr_' + name.split('.')[0] + '_04.log" -f null -')
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_02.mp4 -lavfi psnr="psnr_' + name.split('.')[0] + '_02.log" -f null -')
+
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_08.mp4 -lavfi ssim="ssim_' + name.split('.')[0] + '_08.log" -f null -')
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_06.mp4 -lavfi ssim="ssim_' + name.split('.')[0] + '_06.log" -f null -')
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_04.mp4 -lavfi ssim="ssim_' + name.split('.')[0] + '_04.log" -f null -')
+    os.system("ffmpeg -i " + name + ' -i ' + name.split('.')[0] + '_02.mp4 -lavfi ssim="ssim_' + name.split('.')[0] + '_02.log" -f null -')
